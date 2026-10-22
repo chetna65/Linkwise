@@ -1,0 +1,6 @@
+fastapi==0.143.1
+uvicorn==0.54.0
+pandas==3.0.6
+tldextract==5.4.0
+scikit-learn==1.9.1
+xgboost==3.4.1

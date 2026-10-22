@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Linkwise | ML Domain Phishing Intelligence &amp; Benchmarks</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#22d3c5",
+            "primary-container": "#115e59",
+            "on-primary": "#003733",
+            "secondary": "#60a5fa",
+            "secondary-container": "#1e3a8a",
+            "tertiary": "#34d399",
+            "tertiary-container": "#065f46",
+            "surface": "#0d1322",
+            "surface-dim": "#090d18",
+            "surface-container-lowest": "#060a12",
+            "surface-container-low": "#111827",
+            "surface-container": "#151b2b",
+            "surface-container-high": "#1e2738",
+            "surface-container-highest": "#28344a",
+            "on-surface": "#f1f5f9",
+            "on-surface-variant": "#94a3b8",
+            "outline": "#64748b",
+            "outline-variant": "#263247",
+            "error": "#f87171",
+            "error-container": "#450a0a"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    body {
+      background-color: #0d1322;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #0d1322;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #263247;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary/20 selection:text-primary">
+<!-- Desktop Header Navbar -->
+<header class="sticky top-0 z-50 w-full bg-surface-dim/90 backdrop-blur-md border-b border-outline-variant">
+<div class="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
+<!-- Brand & Project Meta -->
+<div class="flex items-center gap-6">
+<a class="flex items-center gap-2.5 group" href="#">
+<div class="w-8 h-8 rounded bg-primary/10 border border-primary/30 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-surface-dim transition-colors">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-bold text-base tracking-tight text-on-surface">Linkwise</span>
+<span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-surface-container-high text-primary border border-primary/20">v1.4.2</span>
+</div>
+<span class="text-[11px] font-mono text-on-surface-variant -mt-0.5 tracking-wider uppercase">ML Domain Analysis</span>
+</div>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center gap-1 ml-4 border-l border-outline-variant/60 pl-6">
+<a class="px-3 py-1.5 rounded text-xs font-mono text-primary font-medium hover:bg-surface-container transition-colors" href="#scanner">Domain Scanner</a>
+<a class="px-3 py-1.5 rounded text-xs font-mono text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" href="#benchmarks">Model Evaluation</a>
+<a class="px-3 py-1.5 rounded text-xs font-mono text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" href="#matrix">Benchmark Matrix</a>
+<a class="px-3 py-1.5 rounded text-xs font-mono text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" href="#architecture">Architecture &amp; Specs</a>
+</nav>
+</div>
+<!-- System Status and External Reference -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 px-2.5 py-1 rounded bg-surface-container-low border border-outline-variant text-[12px] font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+<span class="text-tertiary font-medium">API: Online</span>
+<span class="text-outline">|</span>
+<span class="text-on-surface-variant">FastAPI 0.110</span>
+</div>
+<a class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-mono text-on-surface-variant hover:text-on-surface transition-all" href="https://github.com" rel="noopener noreferrer" target="_blank">
+<span>GitHub</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+</div>
+</header>
+<!-- Main Container constrained to 1440px desktop canvas -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-8 py-6 flex flex-col gap-8">
+<!-- ========================================== -->
+<!-- SECTION 1: HERO & COMPACT DOMAIN INSPECTOR -->
+<!-- ========================================== -->
+<section class="flex flex-col gap-4" id="scanner">
+<!-- Compact Hero Statement -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pt-1 pb-1 border-b border-outline-variant/60 pb-4">
+<div>
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high border border-outline-variant text-primary font-mono text-[11px] font-medium tracking-wider uppercase mb-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            Static Lexical Telemetry &amp; GBDT Scoring
+          </div>
+<h1 class="text-2xl lg:text-3xl font-bold tracking-tight text-on-surface">
+            Analyze Domains. <span class="text-primary font-semibold">Understand the Risk.</span>
+</h1>
+<p class="text-sm text-on-surface-variant max-w-2xl mt-1">
+            Explore domain-level phishing predictions powered by machine learning and inspect structural lexical signals in real time.
+          </p>
+</div>
+<div class="flex items-center gap-2 text-xs font-mono text-outline shrink-0">
+<span class="material-symbols-outlined text-[16px] text-tertiary">verified_user</span>
+<span>Zero-Network Offline Inspection</span>
+</div>
+</div>
+<!-- Domain Input Bar & Quick Test Pills -->
+<div class="p-4 rounded-lg bg-surface-container-low border border-outline-variant flex flex-col gap-3">
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
+<div class="relative flex-1 flex items-center">
+<span class="absolute left-3.5 text-outline font-mono text-xs select-none">https://</span>
+<input class="w-full bg-surface-container-lowest text-on-surface font-mono text-sm pl-20 pr-4 py-2.5 rounded border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" id="domain-input" placeholder="Enter fully qualified domain name, e.g. account-update.com" type="text" value="secure-appleid-verify.com"/>
+</div>
+<button class="px-6 py-2.5 rounded bg-primary text-on-primary font-mono text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-primary/90 active:scale-[0.99] transition-all shadow-sm" id="analyze-btn" onclick="triggerAnalysis()" type="button">
+<span class="material-symbols-outlined text-[18px]">security_update_good</span>
+<span>Analyze Domain</span>
+</button>
+</div>
+<!-- Quick Test Pills & Safety Footnote -->
+<div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono pt-1">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-outline text-[11px] uppercase tracking-wider">Quick Test Scenarios:</span>
+<button class="px-2.5 py-1 rounded bg-surface-container border border-outline-variant hover:border-error text-error text-[11px] transition-colors" onclick="loadSample('suspicious')" type="button">
+              paypal-security-update.com
+            </button>
+<button class="px-2.5 py-1 rounded bg-surface-container border border-outline-variant hover:border-tertiary text-tertiary text-[11px] transition-colors" onclick="loadSample('benign')" type="button">
+              github.com
+            </button>
+<button class="px-2.5 py-1 rounded bg-surface-container border border-outline-variant hover:border-error text-secondary text-[11px] transition-colors" onclick="loadSample('account')" type="button">
+              account-verify-login.net
+            </button>
+</div>
+<span class="text-[11px] text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">info</span>
+            Analyzes domain text only. Does not open or visit the website.
+          </span>
+</div>
+</div>
+<!-- Domain Inspection Result Card (Balanced Horizontal 2-Column Desktop Grid) -->
+<div class="p-4 rounded-lg bg-surface-container border border-outline-variant grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch" id="result-card">
+<!-- Left Column: Status, Score & Probability Gauge -->
+<div class="lg:col-span-5 flex flex-col justify-between p-4 rounded bg-surface-container-low border border-outline-variant/80">
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-mono uppercase tracking-wider text-outline">Target Evaluation</span>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-error-container/40 border border-error/30 text-error font-mono text-xs font-semibold" id="status-pill">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
+<span id="classification-badge">Potentially Suspicious</span>
+</div>
+</div>
+<div>
+<div class="text-xs font-mono text-outline">FQDN String</div>
+<div class="text-base font-mono font-bold text-on-surface truncate mt-0.5" id="submitted-domain-text">secure-appleid-verify.com</div>
+</div>
+<!-- Gauge & Metric Numbers -->
+<div class="flex flex-col gap-1.5 pt-2">
+<div class="flex items-baseline justify-between">
+<span class="text-xs font-mono text-on-surface-variant">Model Risk Probability:</span>
+<div class="flex items-baseline gap-1">
+<span class="font-mono text-2xl font-bold text-error" id="confidence-val">0.942</span>
+<span class="text-xs font-mono text-outline">/ 1.000</span>
+</div>
+</div>
+<!-- Risk Progress Bar with 0.90 Deployed Threshold Tick -->
+<div class="relative w-full h-2.5 bg-surface-container-highest rounded-full overflow-hidden mt-1">
+<div class="h-full bg-error transition-all duration-500 rounded-full" id="risk-progress-bar" style="width: 94.2%;"></div>
+<!-- Cutoff marker line at 90% -->
+<div class="absolute top-0 bottom-0 left-[90%] w-0.5 bg-on-surface z-10" title="Conservative Threshold: 0.90"></div>
+</div>
+<div class="flex justify-between items-center text-[10px] font-mono text-outline pt-0.5">
+<span>0.00 Benign</span>
+<span class="text-primary font-medium">90% Operational Cutoff</span>
+<span>1.00 Malicious</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 mt-3 border-t border-outline-variant/60 text-xs font-mono text-outline">
+<span>Model: Tuned XGBoost</span>
+<span>Inference: 1.4ms</span>
+</div>
+</div>
+<!-- Right Column: Extracted Lexical Signals Grid -->
+<div class="lg:col-span-7 flex flex-col justify-between gap-3">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-mono uppercase tracking-wider text-outline">Extracted Lexical Signals (Feature Vector)</span>
+<span class="text-[11px] font-mono text-primary">20 Features Computed</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+<div class="p-2.5 rounded bg-surface-container-high border border-outline-variant/60 flex flex-col">
+<span class="text-[11px] font-mono text-on-surface-variant">Domain Length</span>
+<span class="font-mono text-sm font-semibold text-on-surface mt-1" id="feat-len">27 chars</span>
+<span class="text-[10px] font-mono text-outline mt-0.5">&gt; 20 threshold</span>
+</div>
+<div class="p-2.5 rounded bg-surface-container-high border border-outline-variant/60 flex flex-col">
+<span class="text-[11px] font-mono text-on-surface-variant">Hyphen Count</span>
+<span class="font-mono text-sm font-semibold text-error mt-1" id="feat-hyphens">2 hyphens</span>
+<span class="text-[10px] font-mono text-outline mt-0.5">High separator risk</span>
+</div>
+<div class="p-2.5 rounded bg-surface-container-high border border-outline-variant/60 flex flex-col">
+<span class="text-[11px] font-mono text-on-surface-variant">Subdomain Depth</span>
+<span class="font-mono text-sm font-semibold text-on-surface mt-1" id="feat-subdomains">2 segments</span>
+<span class="text-[10px] font-mono text-outline mt-0.5">Standard FQDN</span>
+</div>
+<div class="p-2.5 rounded bg-surface-container-high border border-outline-variant/60 flex flex-col">
+<span class="text-[11px] font-mono text-on-surface-variant">Shannon Entropy</span>
+<span class="font-mono text-sm font-semibold text-secondary mt-1" id="feat-entropy">3.42 bits</span>
+<span class="text-[10px] font-mono text-outline mt-0.5">English-like token</span>
+</div>
+</div>
+<!-- Token Match Row & Disclaimer Banner -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-2.5 rounded bg-surface-container-high border border-outline-variant/60 text-xs font-mono">
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant">Flagged Keywords:</span>
+<span class="text-error font-semibold font-mono bg-error-container/30 px-2 py-0.5 rounded border border-error/20" id="feat-tokens">"secure", "verify"</span>
+</div>
+<div class="flex items-center gap-1.5 text-outline text-[11px]">
+<span class="material-symbols-outlined text-[15px] text-primary">science</span>
+<span>Research notice: Heuristic output only</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-xs font-mono text-outline">
+<div class="flex gap-2">
+<button class="px-2.5 py-1 rounded bg-surface-container-highest text-on-surface border border-outline-variant hover:border-primary transition-all" id="btn-case-suspicious" onclick="toggleState('suspicious')" type="button">
+                Phish Scenario
+              </button>
+<button class="px-2.5 py-1 rounded bg-surface-container-low text-outline hover:text-on-surface border border-outline-variant transition-all" id="btn-case-benign" onclick="toggleState('benign')" type="button">
+                Clean Domain Scenario
+              </button>
+</div>
+<span class="text-[11px] text-outline">Evaluation strictly offline</span>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================== -->
+<!-- SECTION 2: MODEL PERFORMANCE METRICS ROW   -->
+<!-- ========================================== -->
+<section class="flex flex-col gap-3" id="benchmarks">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/60 pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">query_stats</span>
+<h2 class="text-base font-bold tracking-tight text-on-surface font-mono uppercase">Model Performance Dashboard</h2>
+<span class="text-xs font-mono text-outline">| 5-Fold Stratified Cross-Validation</span>
+</div>
+<!-- Dataset Toggle Switcher -->
+<div class="flex items-center gap-2">
+<div class="flex p-0.5 rounded bg-surface-container-low border border-outline-variant">
+<button class="px-3 py-1 rounded text-xs font-mono font-medium bg-primary text-on-primary transition-all" id="tab-dataset-1" onclick="switchDataset(1)" type="button">
+              Domain Lexical Features
+            </button>
+<button class="px-3 py-1 rounded text-xs font-mono font-medium text-on-surface-variant hover:text-on-surface transition-all" id="tab-dataset-2" onclick="switchDataset(2)" type="button">
+              UCI Structural Features
+            </button>
+</div>
+</div>
+</div>
+<!-- 4-Card Compact Metric Row (grid-cols-4 on desktop) -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+<!-- Metric 1: ROC-AUC -->
+<div class="p-3.5 rounded-lg bg-surface-container-low border border-outline-variant flex flex-col justify-between">
+<div class="flex items-center justify-between text-outline text-xs font-mono">
+<span class="uppercase tracking-wider">Best ROC-AUC</span>
+<span class="material-symbols-outlined text-primary text-[16px]">stars</span>
+</div>
+<div class="mt-2">
+<div class="font-mono text-2xl font-bold text-primary">0.984</div>
+<div class="text-xs font-mono text-on-surface-variant mt-0.5 flex items-center justify-between">
+<span>Tuned XGBoost</span>
+<span class="text-[10px] text-tertiary">+0.006 vs Prod</span>
+</div>
+</div>
+</div>
+<!-- Metric 2: F1-Score -->
+<div class="p-3.5 rounded-lg bg-surface-container-low border border-outline-variant flex flex-col justify-between">
+<div class="flex items-center justify-between text-outline text-xs font-mono">
+<span class="uppercase tracking-wider">Best F1-Score</span>
+<span class="material-symbols-outlined text-secondary text-[16px]">tune</span>
+</div>
+<div class="mt-2">
+<div class="font-mono text-2xl font-bold text-secondary">0.912</div>
+<div class="text-xs font-mono text-on-surface-variant mt-0.5 flex items-center justify-between">
+<span>Tuned XGBoost</span>
+<span class="text-[10px] text-secondary">Harmonic Mean</span>
+</div>
+</div>
+</div>
+<!-- Metric 3: Precision -->
+<div class="p-3.5 rounded-lg bg-surface-container-low border border-outline-variant flex flex-col justify-between">
+<div class="flex items-center justify-between text-outline text-xs font-mono">
+<span class="uppercase tracking-wider">Precision</span>
+<span class="material-symbols-outlined text-tertiary text-[16px]">verified</span>
+</div>
+<div class="mt-2">
+<div class="font-mono text-2xl font-bold text-tertiary">0.973</div>
+<div class="text-xs font-mono text-on-surface-variant mt-0.5 flex items-center justify-between">
+<span>@ 0.90 Threshold</span>
+<span class="text-[10px] text-tertiary">&lt;2.7% False Pos</span>
+</div>
+</div>
+</div>
+<!-- Metric 4: Models Evaluated -->
+<div class="p-3.5 rounded-lg bg-surface-container-low border border-outline-variant flex flex-col justify-between">
+<div class="flex items-center justify-between text-outline text-xs font-mono">
+<span class="uppercase tracking-wider">Models Evaluated</span>
+<span class="material-symbols-outlined text-outline text-[16px]">layers</span>
+</div>
+<div class="mt-2">
+<div class="font-mono text-2xl font-bold text-on-surface">6 Classifiers</div>
+<div class="text-xs font-mono text-on-surface-variant mt-0.5 flex items-center justify-between">
+<span>50,000+ Samples</span>
+<span class="text-[10px] text-outline">5-Fold CV</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ============================================================== -->
+<!-- SECTION 3: MODEL COMPARISON CHART & BENCHMARK MATRIX (2-COL) -->
+<!-- ============================================================== -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start" id="matrix">
+<!-- Left Column: Horizontal Bar Chart with Metric Tabs (5 cols on desktop) -->
+<div class="lg:col-span-5 p-4 rounded-lg bg-surface-container-low border border-outline-variant flex flex-col gap-3">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-mono font-bold uppercase tracking-wider text-on-surface">Model Comparison Chart</h3>
+<span class="text-[11px] font-mono text-outline">Normalized (0.00 – 1.00)</span>
+</div>
+<span class="text-xs text-on-surface-variant">Compare classifiers across primary statistical objectives.</span>
+</div>
+<!-- Metric Selector Button Tabs -->
+<div class="flex items-center gap-1 overflow-x-auto py-1 custom-scroll">
+<button class="px-2.5 py-1 rounded text-xs font-mono font-semibold bg-primary text-on-primary" id="metric-roc" onclick="selectMetric('roc')" type="button">ROC-AUC</button>
+<button class="px-2.5 py-1 rounded text-xs font-mono font-medium bg-surface-container hover:bg-surface-container-high text-outline hover:text-on-surface border border-outline-variant" id="metric-prauc" onclick="selectMetric('prauc')" type="button">PR-AUC</button>
+<button class="px-2.5 py-1 rounded text-xs font-mono font-medium bg-surface-container hover:bg-surface-container-high text-outline hover:text-on-surface border border-outline-variant" id="metric-f1" onclick="selectMetric('f1')" type="button">F1-Score</button>
+<button class="px-2.5 py-1 rounded text-xs font-mono font-medium bg-surface-container hover:bg-surface-container-high text-outline hover:text-on-surface border border-outline-variant" id="metric-prec" onclick="selectMetric('prec')" type="button">Precision</button>
+<button class="px-2.5 py-1 rounded text-xs font-mono font-medium bg-surface-container hover:bg-surface-container-high text-outline hover:text-on-surface border border-outline-variant" id="metric-rec" onclick="selectMetric('rec')" type="button">Recall</button>
+</div>
+<div class="text-[11px] font-mono text-outline flex justify-between items-center pt-1 border-t border-outline-variant/60">
+<span id="chart-metric-label">ROC-AUC (Higher is better)</span>
+<span>Score</span>
+</div>
+<!-- Horizontal Bars List -->
+<div class="flex flex-col gap-2.5 pt-1">
+<!-- Item 1: Tuned XGBoost -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center text-xs font-mono">
+<span class="text-on-surface font-semibold flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                Tuned XGBoost
+                <span class="text-[10px] uppercase font-bold text-primary bg-primary/10 px-1 py-0.2 rounded border border-primary/20">Best</span>
+</span>
+<span class="font-mono text-primary font-bold" id="bar-val-0">0.984</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container-highest rounded overflow-hidden">
+<div class="h-full bg-primary rounded transition-all duration-300" id="bar-fill-0" style="width: 98.4%;"></div>
+</div>
+</div>
+<!-- Item 2: Default XGBoost -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center text-xs font-mono">
+<span class="text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                Default XGBoost (Prod)
+              </span>
+<span class="font-mono text-secondary font-medium" id="bar-val-1">0.978</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container-highest rounded overflow-hidden">
+<div class="h-full bg-secondary rounded transition-all duration-300" id="bar-fill-1" style="width: 97.8%;"></div>
+</div>
+</div>
+<!-- Item 3: Random Forest -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center text-xs font-mono">
+<span class="text-on-surface-variant flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                Random Forest (200 trees)
+              </span>
+<span class="font-mono text-on-surface-variant" id="bar-val-2">0.965</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container-highest rounded overflow-hidden">
+<div class="h-full bg-slate-400 rounded transition-all duration-300" id="bar-fill-2" style="width: 96.5%;"></div>
+</div>
+</div>
+<!-- Item 4: SVM -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center text-xs font-mono">
+<span class="text-on-surface-variant flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                SVM (RBF Kernel)
+              </span>
+<span class="font-mono text-on-surface-variant" id="bar-val-3">0.924</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container-highest rounded overflow-hidden">
+<div class="h-full bg-slate-500 rounded transition-all duration-300" id="bar-fill-3" style="width: 92.4%;"></div>
+</div>
+</div>
+<!-- Item 5: Decision Tree -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center text-xs font-mono">
+<span class="text-outline flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                Decision Tree (CART)
+              </span>
+<span class="font-mono text-outline" id="bar-val-4">0.887</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container-highest rounded overflow-hidden">
+<div class="h-full bg-slate-600 rounded transition-all duration-300" id="bar-fill-4" style="width: 88.7%;"></div>
+</div>
+</div>
+<!-- Item 6: Logistic Regression -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center text-xs font-mono">
+<span class="text-outline flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                Logistic Regression
+              </span>
+<span class="font-mono text-outline" id="bar-val-5">0.862</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container-highest rounded overflow-hidden">
+<div class="h-full bg-slate-600 rounded transition-all duration-300" id="bar-fill-5" style="width: 86.2%;"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/60 text-[10px] font-mono text-outline">
+<span>Min test floor: 0.80</span>
+<span>Sample size: 50,000 domains</span>
+</div>
+</div>
+<!-- Right Column: Detailed Cross-Validation Matrix Table (7 cols on desktop) -->
+<div class="lg:col-span-7 p-4 rounded-lg bg-surface-container-low border border-outline-variant flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex flex-col gap-0.5">
+<h3 class="text-sm font-mono font-bold uppercase tracking-wider text-on-surface">Benchmark Evaluation Matrix</h3>
+<span class="text-xs text-on-surface-variant">Quantitative evaluation across uniform held-out validation partitions.</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container-high border border-outline-variant font-mono text-[11px] text-primary">
+            5-Fold Stratified CV
+          </span>
+</div>
+<div class="overflow-x-auto rounded border border-outline-variant/60">
+<table class="w-full text-left font-mono text-xs whitespace-nowrap">
+<thead>
+<tr class="bg-surface-container-high text-outline text-[11px] uppercase tracking-wider border-b border-outline-variant">
+<th class="py-2.5 px-3 font-medium">Model Architecture</th>
+<th class="py-2.5 px-3 text-right font-medium">Precision</th>
+<th class="py-2.5 px-3 text-right font-medium">Recall</th>
+<th class="py-2.5 px-3 text-right font-medium">F1-Score</th>
+<th class="py-2.5 px-3 text-right font-medium">ROC-AUC</th>
+<th class="py-2.5 px-3 text-right font-medium">PR-AUC</th>
+<th class="py-2.5 px-3 text-right font-medium">Train</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/40">
+<!-- Row 1: Tuned XGBoost (Highlighted) -->
+<tr class="bg-primary/5 hover:bg-primary/10 transition-colors">
+<td class="py-2.5 px-3 font-semibold text-primary flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                  Tuned XGBoost
+                </td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.938</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.887</td>
+<td class="py-2.5 px-3 text-right text-primary font-bold tabular-nums">0.912</td>
+<td class="py-2.5 px-3 text-right text-primary font-bold tabular-nums">0.984</td>
+<td class="py-2.5 px-3 text-right text-primary font-bold tabular-nums">0.976</td>
+<td class="py-2.5 px-3 text-right text-outline tabular-nums">14.2s</td>
+</tr>
+<!-- Row 2: Default XGBoost -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-3 text-secondary flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  XGBoost (Prod)
+                </td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.925</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.871</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.897</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.978</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.969</td>
+<td class="py-2.5 px-3 text-right text-outline tabular-nums">8.4s</td>
+</tr>
+<!-- Row 3: Random Forest -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-3 text-on-surface">Random Forest</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.914</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.852</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.882</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.965</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.954</td>
+<td class="py-2.5 px-3 text-right text-outline tabular-nums">19.8s</td>
+</tr>
+<!-- Row 4: SVM -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-3 text-on-surface">SVM (RBF Kernel)</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.879</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.812</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.844</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.924</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.908</td>
+<td class="py-2.5 px-3 text-right text-outline tabular-nums">48.6s</td>
+</tr>
+<!-- Row 5: Decision Tree -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-3 text-on-surface-variant">Decision Tree</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.841</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.820</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.830</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.887</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.861</td>
+<td class="py-2.5 px-3 text-right text-outline tabular-nums">1.9s</td>
+</tr>
+<!-- Row 6: Logistic Regression -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-3 text-outline">Logistic Regression</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.815</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.793</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.804</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.862</td>
+<td class="py-2.5 px-3 text-right text-on-surface tabular-nums">0.835</td>
+<td class="py-2.5 px-3 text-right text-outline tabular-nums">0.8s</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-2.5 rounded bg-surface-container text-xs text-on-surface-variant flex items-center justify-between border border-outline-variant/60">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span>Tuned XGBoost exhibits leading ROC-AUC (0.984) and PR-AUC (0.976).</span>
+</div>
+<span class="text-[11px] font-mono text-outline">Seed: 42</span>
+</div>
+</div>
+</section>
+<!-- ============================================================== -->
+<!-- SECTION 4: THRESHOLD INSIGHTS & ARCHITECTURE SUMMARY (2-COL)   -->
+<!-- ============================================================== -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pb-4" id="architecture">
+<!-- Card 1: Classification Threshold Analysis -->
+<div class="p-4 rounded-lg bg-surface-container-low border border-outline-variant flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">tune</span>
+<h3 class="text-sm font-mono font-bold uppercase tracking-wider text-on-surface">Classification Threshold Tradeoff</h3>
+</div>
+<span class="px-2 py-0.5 rounded bg-primary/10 border border-primary/20 text-primary font-mono text-[11px]">
+            Deployed: 0.90
+          </span>
+</div>
+<p class="text-xs text-on-surface-variant">
+          Precision-recall calibration across classification cutoffs. High-confidence mode eliminates noisy alarms in automated enterprise pipelines.
+        </p>
+<!-- Precision / Recall Mini Curve Chart SVG -->
+<div class="w-full h-32 bg-surface-container-lowest rounded border border-outline-variant/60 p-2 relative flex flex-col justify-end">
+<svg class="w-full h-24" preserveaspectratio="none" viewbox="0 0 320 100">
+<!-- Grid lines -->
+<line stroke="#1e2738" stroke-dasharray="2 2" stroke-width="1" x1="10" x2="310" y1="20" y2="20"></line>
+<line stroke="#1e2738" stroke-dasharray="2 2" stroke-width="1" x1="10" x2="310" y1="50" y2="50"></line>
+<line stroke="#263247" stroke-width="1" x1="10" x2="310" y1="80" y2="80"></line>
+<!-- Threshold 0.90 Cutoff line -->
+<line stroke="#22d3c5" stroke-dasharray="3 3" stroke-width="1.5" x1="280" x2="280" y1="5" y2="80"></line>
+<text fill="#22d3c5" font-family="JetBrains Mono" font-size="8" text-anchor="middle" x="280" y="94">0.90 Deployed</text>
+<!-- Precision curve -->
+<path d="M 20 45 Q 120 40, 200 30 T 280 18 L 310 16" fill="none" stroke="#22d3c5" stroke-linecap="round" stroke-width="2"></path>
+<!-- Recall curve -->
+<path d="M 20 30 Q 130 40, 200 55 T 280 75 L 310 78" fill="none" stroke="#60a5fa" stroke-linecap="round" stroke-width="2"></path>
+<!-- Points on 0.90 line -->
+<circle cx="280" cy="18" fill="#22d3c5" r="3"></circle>
+<circle cx="280" cy="75" fill="#60a5fa" r="3"></circle>
+</svg>
+<div class="flex justify-between text-[10px] font-mono text-outline px-1">
+<span class="text-primary flex items-center gap-1"><span class="w-2 h-0.5 bg-primary"></span> Precision (0.973)</span>
+<span class="text-secondary flex items-center gap-1"><span class="w-2 h-0.5 bg-secondary"></span> Recall (0.211)</span>
+</div>
+</div>
+<!-- 3 Key Metric Badges -->
+<div class="grid grid-cols-3 gap-2 text-center font-mono">
+<div class="p-2 rounded bg-surface-container border border-outline-variant/60 flex flex-col">
+<span class="text-[10px] text-outline uppercase">Precision</span>
+<span class="text-sm font-bold text-primary mt-0.5">0.973</span>
+<span class="text-[9px] text-on-surface-variant">&lt;2.7% False Pos</span>
+</div>
+<div class="p-2 rounded bg-surface-container border border-outline-variant/60 flex flex-col">
+<span class="text-[10px] text-outline uppercase">Recall Rate</span>
+<span class="text-sm font-bold text-secondary mt-0.5">0.211</span>
+<span class="text-[9px] text-on-surface-variant">Conservative</span>
+</div>
+<div class="p-2 rounded bg-surface-container border border-outline-variant/60 flex flex-col">
+<span class="text-[10px] text-outline uppercase">Alexa Flagged</span>
+<span class="text-sm font-bold text-on-surface mt-0.5">23 / 1000</span>
+<span class="text-[9px] text-outline">Top 1k Alexa</span>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant/90 border-t border-outline-variant/60 pt-2">
+          The conservative threshold prioritizes extreme precision over recall. Ambiguous phishing URLs are intentionally allowed through without false positive alarms in automated threat feeds.
+        </p>
+</div>
+<!-- Card 2: How It Works & Limitations -->
+<div class="p-4 rounded-lg bg-surface-container-low border border-outline-variant flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">menu_book</span>
+<h3 class="text-sm font-mono font-bold uppercase tracking-wider text-on-surface">Architecture &amp; Limitations</h3>
+</div>
+<span class="font-mono text-[11px] text-outline">Open Research Prototype</span>
+</div>
+<!-- How It Works (List) -->
+<div class="flex flex-col gap-1.5">
+<div class="text-[11px] font-mono uppercase tracking-wider text-primary font-semibold">Inference Pipeline</div>
+<div class="grid grid-cols-1 gap-2 text-xs text-on-surface-variant">
+<div class="flex items-start gap-2 p-2 rounded bg-surface-container border border-outline-variant/60">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0 mt-0.5">check_circle</span>
+<div>
+<strong class="text-on-surface">20 Lexical Features:</strong> Extracts domain length, Shannon entropy, TLD risk factor, digit ratios, and credential deception tokens.
+              </div>
+</div>
+<div class="flex items-start gap-2 p-2 rounded bg-surface-container border border-outline-variant/60">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0 mt-0.5">check_circle</span>
+<div>
+<strong class="text-on-surface">Zero-Network Static Safety:</strong> Pure string parsing without DNS resolution, socket connections, page crawling, or certificate handshakes.
+              </div>
+</div>
+</div>
+</div>
+<!-- Limitations Notice -->
+<div class="flex flex-col gap-1.5 pt-1">
+<div class="text-[11px] font-mono uppercase tracking-wider text-error font-semibold">Important Scope Limits</div>
+<div class="p-2.5 rounded bg-surface-container border border-outline-variant/60 text-xs text-on-surface-variant flex flex-col gap-1.5">
+<div class="flex items-start gap-1.5">
+<span class="material-symbols-outlined text-error text-[15px] shrink-0 mt-0.2">warning</span>
+<span><strong>No HTML Context:</strong> Does not evaluate page forms, DOM traps, or JavaScript obfuscation. Compromised legitimate domains score benign.</span>
+</div>
+<div class="flex items-start gap-1.5">
+<span class="material-symbols-outlined text-error text-[15px] shrink-0 mt-0.2">warning</span>
+<span><strong>Research Scope:</strong> For educational exploration. Deploy in combination with enterprise SOC EDR and perimeter firewalls.</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Desktop Minimal Footer -->
+<footer class="w-full bg-surface-dim border-t border-outline-variant mt-auto py-5">
+<div class="max-w-7xl mx-auto px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-outline">
+<div class="flex items-center gap-2">
+<span class="text-on-surface font-semibold">Linkwise</span>
+<span>•</span>
+<span>Machine Learning Phishing Detection Benchmark</span>
+</div>
+<div class="flex items-center gap-4">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="https://github.com" rel="noopener noreferrer" target="_blank">
+          GitHub Repository <span class="material-symbols-outlined text-[12px]">open_in_new</span>
+</a>
+<span>•</span>
+<span>FastAPI &amp; XGBoost Engine</span>
+<span>•</span>
+<span>MIT Open Source</span>
+</div>
+</div>
+</footer>
+<!-- Interactive Script for Live Demos & Tab Switching -->
+<script>
+    const sampleProfiles = {
+      suspicious: {
+        domain: 'secure-appleid-verify.com',
+        badge: 'Potentially Suspicious',
+        isPhish: true,
+        prob: '0.942',
+        pct: 94.2,
+        length: '27 chars',
+        hyphens: '2 hyphens',
+        subdomains: '2 segments',
+        entropy: '3.42 bits',
+        tokens: '"secure", "verify"'
+      },
+      benign: {
+        domain: 'github.com',
+        badge: 'Likely Benign',
+        isPhish: false,
+        prob: '0.041',
+        pct: 4.1,
+        length: '10 chars',
+        hyphens: '0 hyphens',
+        subdomains: '1 segment',
+        entropy: '2.54 bits',
+        tokens: 'None (Clean)'
+      },
+      account: {
+        domain: 'account-verify-login.net',
+        badge: 'High Threat Level',
+        isPhish: true,
+        prob: '0.981',
+        pct: 98.1,
+        length: '24 chars',
+        hyphens: '2 hyphens',
+        subdomains: '2 segments',
+        entropy: '3.61 bits',
+        tokens: '"verify", "login"'
+      }
+    };
+
+    const metricDatasets = {
+      roc: {
+        label: 'ROC-AUC (Higher is better)',
+        scores: ['0.984', '0.978', '0.965', '0.924', '0.887', '0.862'],
+        widths: ['98.4%', '97.8%', '96.5%', '92.4%', '88.7%', '86.2%']
+      },
+      prauc: {
+        label: 'PR-AUC (Higher is better)',
+        scores: ['0.976', '0.969', '0.954', '0.908', '0.861', '0.835'],
+        widths: ['97.6%', '96.9%', '95.4%', '90.8%', '86.1%', '83.5%']
+      },
+      f1: {
+        label: 'F1-Score (Harmonic mean)',
+        scores: ['0.912', '0.897', '0.882', '0.844', '0.830', '0.804'],
+        widths: ['91.2%', '89.7%', '88.2%', '84.4%', '83.0%', '80.4%']
+      },
+      prec: {
+        label: 'Precision @ 0.90 Threshold',
+        scores: ['0.973', '0.958', '0.941', '0.910', '0.875', '0.842'],
+        widths: ['97.3%', '95.8%', '94.1%', '91.0%', '87.5%', '84.2%']
+      },
+      rec: {
+        label: 'Recall @ 0.50 Threshold',
+        scores: ['0.887', '0.871', '0.852', '0.812', '0.820', '0.793'],
+        widths: ['88.7%', '87.1%', '85.2%', '81.2%', '82.0%', '79.3%']
+      }
+    };
+
+    function updateResultCard(data) {
+      document.getElementById('submitted-domain-text').textContent = data.domain;
+      document.getElementById('classification-badge').textContent = data.badge;
+      document.getElementById('confidence-val').textContent = data.prob;
+      document.getElementById('risk-progress-bar').style.width = data.pct + '%';
+      document.getElementById('feat-len').textContent = data.length;
+      document.getElementById('feat-hyphens').textContent = data.hyphens;
+      document.getElementById('feat-subdomains').textContent = data.subdomains;
+      document.getElementById('feat-entropy').textContent = data.entropy;
+      document.getElementById('feat-tokens').textContent = data.tokens;
+
+      const pill = document.getElementById('status-pill');
+      const confVal = document.getElementById('confidence-val');
+      const bar = document.getElementById('risk-progress-bar');
+      const tokenBox = document.getElementById('feat-tokens');
+
+      if (data.isPhish) {
+        pill.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-error-container/40 border border-error/30 text-error font-mono text-xs font-semibold';
+        pill.children[0].className = 'w-1.5 h-1.5 rounded-full bg-error animate-ping';
+        confVal.className = 'font-mono text-2xl font-bold text-error';
+        bar.className = 'h-full bg-error transition-all duration-500 rounded-full';
+        tokenBox.className = 'text-error font-semibold font-mono bg-error-container/30 px-2 py-0.5 rounded border border-error/20';
+      } else {
+        pill.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-tertiary-container/30 border border-tertiary/30 text-tertiary font-mono text-xs font-semibold';
+        pill.children[0].className = 'w-1.5 h-1.5 rounded-full bg-tertiary';
+        confVal.className = 'font-mono text-2xl font-bold text-tertiary';
+        bar.className = 'h-full bg-tertiary transition-all duration-500 rounded-full';
+        tokenBox.className = 'text-tertiary font-semibold font-mono bg-tertiary-container/20 px-2 py-0.5 rounded border border-tertiary/20';
+      }
+    }
+
+    function loadSample(key) {
+      const input = document.getElementById('domain-input');
+      const data = sampleProfiles[key];
+      if (data) {
+        input.value = data.domain;
+        updateResultCard(data);
+      }
+    }
+
+    function triggerAnalysis() {
+      const input = document.getElementById('domain-input');
+      const val = input.value.trim().toLowerCase();
+      const btn = document.getElementById('analyze-btn');
+
+      btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span><span>Parsing...</span>`;
+      setTimeout(() => {
+        btn.innerHTML = `<span class="material-symbols-outlined text-[18px]">security_update_good</span><span>Analyze Domain</span>`;
+        if (val.includes('git') || val.includes('google') || val.includes('apple.com')) {
+          updateResultCard(sampleProfiles.benign);
+        } else if (val.includes('account') || val.includes('login')) {
+          updateResultCard(sampleProfiles.account);
+        } else {
+          updateResultCard(sampleProfiles.suspicious);
+        }
+      }, 250);
+    }
+
+    function toggleState(type) {
+      const btnSusp = document.getElementById('btn-case-suspicious');
+      const btnBenign = document.getElementById('btn-case-benign');
+      if (type === 'suspicious') {
+        btnSusp.className = 'px-2.5 py-1 rounded bg-surface-container-highest text-on-surface border border-outline-variant hover:border-primary transition-all font-medium';
+        btnBenign.className = 'px-2.5 py-1 rounded bg-surface-container-low text-outline hover:text-on-surface border border-outline-variant transition-all';
+        loadSample('suspicious');
+      } else {
+        btnBenign.className = 'px-2.5 py-1 rounded bg-surface-container-highest text-on-surface border border-outline-variant hover:border-primary transition-all font-medium';
+        btnSusp.className = 'px-2.5 py-1 rounded bg-surface-container-low text-outline hover:text-on-surface border border-outline-variant transition-all';
+        loadSample('benign');
+      }
+    }
+
+    function switchDataset(idx) {
+      const tab1 = document.getElementById('tab-dataset-1');
+      const tab2 = document.getElementById('tab-dataset-2');
+      if (idx === 1) {
+        tab1.className = 'px-3 py-1 rounded text-xs font-mono font-medium bg-primary text-on-primary transition-all';
+        tab2.className = 'px-3 py-1 rounded text-xs font-mono font-medium text-on-surface-variant hover:text-on-surface transition-all';
+      } else {
+        tab2.className = 'px-3 py-1 rounded text-xs font-mono font-medium bg-primary text-on-primary transition-all';
+        tab1.className = 'px-3 py-1 rounded text-xs font-mono font-medium text-on-surface-variant hover:text-on-surface transition-all';
+      }
+    }
+
+    function selectMetric(key) {
+      ['roc', 'prauc', 'f1', 'prec', 'rec'].forEach(k => {
+        const btn = document.getElementById('metric-' + k);
+        if (k === key) {
+          btn.className = 'px-2.5 py-1 rounded text-xs font-mono font-semibold bg-primary text-on-primary';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded text-xs font-mono font-medium bg-surface-container hover:bg-surface-container-high text-outline hover:text-on-surface border border-outline-variant';
+        }
+      });
+
+      const ds = metricDatasets[key];
+      if (ds) {
+        document.getElementById('chart-metric-label').textContent = ds.label;
+        for (let i = 0; i < 6; i++) {
+          const valEl = document.getElementById('bar-val-' + i);
+          const fillEl = document.getElementById('bar-fill-' + i);
+          if (valEl && fillEl) {
+            valEl.textContent = ds.scores[i];
+            fillEl.style.width = ds.widths[i];
+          }
+        }
+      }
+    }
+  </script>
+</body></html>
